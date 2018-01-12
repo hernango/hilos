@@ -10,7 +10,9 @@ import drogueria.persistencia.ConsultaMedDAO;
 import drogueria.persistencia.LaboratorioDescMedVenta;
 import drogueria.persistencia.Lote;
 import drogueria.persistencia.LoteDAO;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.NoResultException;
 
@@ -27,7 +29,8 @@ public class FacturadorVenta {
    private long totalVenta;
    private long pago;
    Map<String,FacturaListaLotes> mapaListaLotes=new HashMap<String, FacturaListaLotes>();
-
+   List<ServicioSalud>listaServicios;
+   
     public long getTotalVenta() {
         return totalVenta;
     }
@@ -50,6 +53,14 @@ public class FacturadorVenta {
 
     public void setMapaListaLotes(Map<String, FacturaListaLotes> mapaListaLotes) {
         this.mapaListaLotes = mapaListaLotes;
+    }
+
+    public List<ServicioSalud> getListaServicios() {
+        return listaServicios;
+    }
+
+    public void setListaServicios(List<ServicioSalud> listaServicios) {
+        this.listaServicios = listaServicios;
     }
    
    
@@ -118,5 +129,33 @@ public class FacturadorVenta {
  return (this.pago-this.totalVenta);
  }
  
+ public boolean agregarServicioSalud(ServicioSalud servicioSalud){
  
+     boolean realizado=false;
+     if(this.listaServicios==null){
+     this.listaServicios=new ArrayList<ServicioSalud>();
+     System.out.println("aqui");
+     }
+     listaServicios.add(servicioSalud);
+     this.totalVenta +=servicioSalud.getValor();
+     
+     realizado=true;
+       
+     return realizado;        
+    
+ }
+ 
+ public boolean eliminarServicioSalud(ServicioSalud servicioSalud){
+  boolean realizado=false;
+     if(listaServicios!=null){
+     
+        realizado= listaServicios.remove(servicioSalud);
+        if(realizado){ this.totalVenta -=servicioSalud.getValor();}
+     }
+     
+     
+     
+       
+     return realizado;
+ }
 }

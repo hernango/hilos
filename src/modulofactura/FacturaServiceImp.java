@@ -110,8 +110,25 @@ public class FacturaServiceImp implements IFacturaService{
     public long devolusion() {
       return this.fact.devolusion();
     }
- 
- 
+
+    @Override
+    public boolean agregarServicioSalud(ServicioSalud servicioSalud) {
+      boolean resultado=false;
+      
+      resultado=fact.agregarServicioSalud(servicioSalud);
+      return resultado;
+    }
+
+    @Override
+    public boolean eliminarServicioSalud(ServicioSalud servicioSalud) {
+     boolean resultado=false;
+     
+     resultado=fact.eliminarServicioSalud(servicioSalud);
+     
+    return resultado;
+            
+        }
+
  
 private  void cargarMedicamentosTodosLote(FacturadorVenta facturaVenta, FacturaVenta venta)
 throws Exception{

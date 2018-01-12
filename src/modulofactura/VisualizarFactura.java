@@ -5,6 +5,7 @@
  */
 package modulofactura;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +19,7 @@ public static void imprimir(IFacturaService facturaService){
  FacturadorVenta facturaVenta= facturaService.getFact();
  
 Map<String,FacturaListaLotes> listaDescripciones=facturaVenta.getMapaListaLotes();
-
+// medicamento por lote
 for(String descripcion:listaDescripciones.keySet())
 {
    FacturaListaLotes factura= listaDescripciones.get(descripcion);
@@ -28,6 +29,19 @@ for(String descripcion:listaDescripciones.keySet())
     System.out.print("     " +factura.getCantidadTotal());
     System.out.println("     " +factura.cantidadSubtotal());
 }
+// servicios
+List<ServicioSalud> listaServicio=facturaVenta.getListaServicios();
+int cantServicio=0;
+
+
+if(listaServicio!=null){
+for(ServicioSalud servicio:listaServicio){
+    System.out.print("S" + ++cantServicio);
+    System.out.print("     " +servicio.getDescripcionServicio());
+    System.out.println("     " +servicio.getValor());
+}
+}
+// total
 System.out.println("Total:" + facturaVenta.getTotalVenta());
 }    
 }

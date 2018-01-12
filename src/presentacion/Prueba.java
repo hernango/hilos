@@ -11,6 +11,7 @@ import drogueria.persistencia.Usuario;
 import modulofactura.FacturaServiceImp;
 import modulofactura.IFacturaService;
 import modulofactura.LoteFactura;
+import modulofactura.ServicioSalud;
 import modulofactura.VisualizarFactura;
 
 /**
@@ -32,11 +33,17 @@ public static void prueba2(){
     LoteFactura loteF2=new LoteFactura();
     loteF2.setLote(new Lote("13"));
     LoteFactura loteF3=new LoteFactura();
-    loteF3.setLote(new Lote("8"));
+    loteF3.setLote(new Lote("13"));
+    
+    //lista de servicio
+    
     try{
     factura.agregarEnLote(loteF1);
     factura.agregarEnLote(loteF2);
     factura.agregarEnLote(loteF3);
+    factura.agregarServicioSalud(new ServicioSalud(2000));
+    factura.agregarServicioSalud(new ServicioSalud(4000));
+    factura.eliminarServicioSalud(new ServicioSalud(2000));
     /* activar solo cuando se quiere mandar a base de dato */
     //factura.procesarVenta();
     

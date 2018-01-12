@@ -31,6 +31,10 @@ public interface IFacturaService {
     
     public void eliminarEnLote(LoteFactura loteFactura)throws Exception;
     
+    public boolean agregarServicioSalud(ServicioSalud servicioSalud);
+    
+    public boolean eliminarServicioSalud(ServicioSalud servicioSalud);
+    
     public void procesarVenta()throws Exception;
     
     public FacturadorVenta getFact();
