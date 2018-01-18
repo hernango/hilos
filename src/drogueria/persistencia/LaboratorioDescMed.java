@@ -7,6 +7,7 @@ package drogueria.persistencia;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -37,7 +38,9 @@ public class LaboratorioDescMed implements Serializable {
     protected LaboratorioDescMedPK laboratorioDescMedPK;
     @Column(name = "invima")
     private String invima;
-    
+    @Basic(optional = true)
+    @Column(name = "codigo_barras")
+    private String codigoBarras;
     @JoinColumn(name = "id_lab", referencedColumnName = "id_lab", insertable = false, updatable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Laboratorio laboratorio;
@@ -87,6 +90,15 @@ public class LaboratorioDescMed implements Serializable {
     public void setDescripcion(Descripcion descripcion) {
         this.descripcion = descripcion;
     }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
+    }
+    
 
     @Override
     public int hashCode() {

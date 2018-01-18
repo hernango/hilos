@@ -64,11 +64,12 @@ public class FacturadorVenta {
     }
    
    
-   public void agregarALote(LoteFactura lote) throws Exception{
-    
-       ConsultaMedDAO consultaMedDAO= new ConsultaMedDAO();
+ public void agregarMedicamento(LaboratorioDescMedVenta labDescVenta)
+ throws Exception{
+     
+ ConsultaMedDAO consultaMedDAO= new ConsultaMedDAO();
        try{
-       DescripcionLaboratorio descLab=consultaMedDAO.consultaCantidadesPorLote(lote.getLote());
+       DescripcionLaboratorio descLab=consultaMedDAO.consultaCantidadesPorDescLab(labDescVenta);
        
        if(descLab!=null){
        
@@ -78,10 +79,10 @@ public class FacturadorVenta {
       // crea si es necesario por primera vez un lote 
        if(controladorListaLotes==null){
           controladorListaLotes=new FacturaListaLotes();
-          controladorListaLotes.cargarLaboratorioDescMedVenta(descLab);
+          controladorListaLotes.cargarLaboratorioDescMedVenta(labDescVenta);
           mapaListaLotes.put(codigoDescLab, controladorListaLotes);
           }
-        if(controladorListaLotes.agregarALote(descLab)){
+        if(controladorListaLotes.agregarMedicamento(descLab)){
          this.totalVenta +=controladorListaLotes.getLabDescMedVenta().getPrecio();
         }
         
@@ -94,25 +95,23 @@ public class FacturadorVenta {
        catch (NoResultException error){ 
            throw new Exception("no existen elementos");
        }
-       
-   }
-   
+ 
+ }
+
+ 
   /* eliminar medicamento de lote solo si es posible
     */
   
- public void eliminarMedLote(LoteFactura lote) throws Exception
+ public void eliminarMedicamento(LaboratorioDescMedVenta labDescVenta) throws Exception
   {
    try{   
-   LoteDAO loteDAO=new LoteDAO();
-   Lote loteEncontrado=loteDAO.consultarPorIdLote(lote.getLote());
-   LaboratorioDescMedVenta labDescVenta=loteEncontrado.getLaboratorioDescMedVenta();
    String codigoDescLab=String.valueOf(labDescVenta.getLaboratorioDescMed().getDescripcion().getIdDesc()) 
                +"/" +String.valueOf(labDescVenta.getLaboratorioDescMed().getLaboratorio().getIdLab());
    FacturaListaLotes controladorListaLotes=mapaListaLotes.get(codigoDescLab);  
    
    if(controladorListaLotes!=null){
         
-    if(controladorListaLotes.eliminarEnLote(lote)){
+    if(controladorListaLotes.eliminarMedicamento(labDescVenta)){
          this.totalVenta -=controladorListaLotes.getLabDescMedVenta().getPrecio();
          if (controladorListaLotes.getCantidadTotal()==0){
            mapaListaLotes.remove(codigoDescLab);
@@ -120,11 +119,12 @@ public class FacturadorVenta {
         }  
     
         }
-   else throw new Exception("No existe lote a eliminar");
+   else throw new Exception("No existe medicamento a eliminar");
    }
    catch(NoResultException error){
    throw new Exception("no existe lote a eliminar");}
    }
+ 
  public Long devolusion(){
  return (this.pago-this.totalVenta);
  }

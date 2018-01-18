@@ -7,9 +7,13 @@ package modulofactura;
 
 import drogueria.persistencia.ConsultaMedDAO;
 import drogueria.persistencia.LaboratorioDescMedVenta;
+import drogueria.persistencia.LaboratorioDescMedVentaDAO;
 import drogueria.persistencia.Lote;
 import drogueria.persistencia.LoteDAO;
+import drogueria.persistencia.Medicamento;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +22,7 @@ import java.util.Map;
  */
 public class FacturaListaLotes {
     
- private Map<String,LoteFactura> mapaLotesFactura=new HashMap<String, LoteFactura>();
+ //private List<Medicamento> listaMedicamentos=new ArrayList<Medicamento>();
  private LaboratorioDescMedVenta labDescMedVenta;
  private int cantidadTotal;
 
@@ -31,75 +35,47 @@ public class FacturaListaLotes {
     }
 
  
-    public Map<String, LoteFactura> getMapaLotesFactura() {
-        return mapaLotesFactura;
-    }
-
-    public void setMapaLotesFactura(Map<String, LoteFactura> mapaLotesFactura) {
-        this.mapaLotesFactura = mapaLotesFactura;
-    }
-
+       
     public LaboratorioDescMedVenta getLabDescMedVenta() {
         return labDescMedVenta;
     }
 
     public void setLabDescMedVenta(LaboratorioDescMedVenta labDescMedVenta) {
+        
         this.labDescMedVenta = labDescMedVenta;
     }
- 
- public boolean agregarALote(DescripcionLaboratorio descLab) throws Exception{
+
+
+    
+ public boolean agregarMedicamento(DescripcionLaboratorio descLab) throws Exception{
       boolean fueAgregado=false;
-       LoteFactura loteBuscado=mapaLotesFactura.get(descLab.getIdLote());
-       // crea si es necesario por primera vez un lote 
-       if(loteBuscado==null){
-          loteBuscado=new LoteFactura();
-          loteBuscado.setCantidadMedLote((int)descLab.getCantidad());
-          loteBuscado.setLote(new Lote(descLab.getIdLote()));
-          LoteDAO loteDAO=new LoteDAO();
-          Lote loteEncontrado=loteDAO.consultarPorIdLote(loteBuscado.getLote());
-          loteBuscado.setLote(loteEncontrado);
-          mapaLotesFactura.put(loteEncontrado.getIdLote(),loteBuscado);
-          }
-       
-       if(loteBuscado.posibleAgregarALote())
-       {
-        loteBuscado.aumentarCantidad();
-        fueAgregado=true;
+       if((this.cantidadTotal +1)<=descLab.getCantidad())  {
+       fueAgregado=true;
         this.cantidadTotal++;
        }
-       else 
-       throw new NoMedicamentosDisponibleException();
+        else
+           throw new Exception("no se puede agregar, cantidad insuficiente");
     return fueAgregado;    
  }
  
-public boolean eliminarEnLote(LoteFactura lote) throws Exception{
+public boolean eliminarMedicamento(DescripcionLaboratorio descLab) throws Exception{
       boolean fueEliminado=false;
-       LoteFactura loteBuscado=mapaLotesFactura.get(lote.getLote().getIdLote());
-       // crea si es necesario por primera vez un lote 
-       if(loteBuscado!=null){
-           if(loteBuscado.getCantidad()-1>=0){
-           loteBuscado.disminuirCantidad();
+       
+         if(this.cantidadTotal-1>=0){
            fueEliminado=true;
            this.cantidadTotal--;
-           if(loteBuscado.getCantidad()==0) mapaLotesFactura.
-                   remove(lote.getLote().getIdLote());
-          }
-           else throw new Exception("no se puede eliminar, no existen lotes");
-       }    
-       else 
-       throw new Exception("Lote no existe");
-    return fueEliminado;    
+         }
+           else throw new Exception("no se puede eliminar, no hay medicamentos");
+      return fueEliminado;    
  }
 
 
 
 
- public void cargarLaboratorioDescMedVenta(DescripcionLaboratorio descLab)throws Exception{
+ public void cargarLaboratorioDescMedVenta(LaboratorioDescMedVenta descLabVenta)throws Exception{
  
-     Lote lote=new Lote(descLab.getIdLote());
-     LoteDAO loteDAO=new LoteDAO();
-     lote= loteDAO.consultarPorIdLote(lote);
-     this.labDescMedVenta=lote.getLaboratorioDescMedVenta();
+       LaboratorioDescMedVentaDAO daoLabDescVenta =new LaboratorioDescMedVentaDAO();
+       this.labDescMedVenta=daoLabDescVenta.conseguirLabDescVentaPorLabDesc(descLabVenta);
    
  }
        

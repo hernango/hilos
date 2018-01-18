@@ -6,6 +6,7 @@
 package modulofactura;
 
 import drogueria.persistencia.Cliente;
+import drogueria.persistencia.LaboratorioDescMedVenta;
 import drogueria.persistencia.Usuario;
 import java.util.Date;
 
@@ -27,7 +28,7 @@ public interface IFacturaService {
     
     public Date getHora();
     
-    public void agregarEnLote(LoteFactura loteFactura)throws Exception;
+    public void agregarEnLote(LaboratorioDescMedVenta loteFactura)throws Exception;
     
     public void eliminarEnLote(LoteFactura loteFactura)throws Exception;
     

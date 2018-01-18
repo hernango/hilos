@@ -8,6 +8,8 @@ package modulofactura;
 import drogueria.persistencia.Cliente;
 import drogueria.persistencia.FacturaVenta;
 import drogueria.persistencia.FacturaVentaDAO;
+import drogueria.persistencia.LaboratorioDescMedVenta;
+import drogueria.persistencia.LaboratorioDescMedVentaDAO;
 import drogueria.persistencia.Medicamento;
 import drogueria.persistencia.MedicamentoDAO;
 import drogueria.persistencia.Usuario;
@@ -80,13 +82,13 @@ public class FacturaServiceImp implements IFacturaService{
   }
   
   @Override
- public void agregarEnLote(LoteFactura loteFactura)throws Exception{
- fact.agregarALote(loteFactura);
+ public void agregarEnLote(LaboratorioDescMedVenta loteFactura)throws Exception{
+ fact.agregarMedicamento(loteFactura);
  }
 
   @Override
  public void eliminarEnLote(LoteFactura loteFactura)throws Exception{
- fact.eliminarMedLote(loteFactura);
+ //fact.eliminarMedLote(loteFactura);
  }
   @Override
  public void procesarVenta()throws Exception{
@@ -137,25 +139,24 @@ Map<String,FacturaListaLotes> listaDescripciones=facturaVenta.getMapaListaLotes(
 
 for(String descripcion:listaDescripciones.keySet())
 {
-   FacturaListaLotes factura= listaDescripciones.get(descripcion);
-  Map<String,LoteFactura>listaLotes= factura.getMapaLotesFactura();
-    for(String lote:listaLotes.keySet()){
-        cargarMedicamentoSegunLote(venta, listaLotes.get(lote));
+   FacturaListaLotes facturaListaLotes= listaDescripciones.get(descripcion);
+  
+       cargarMedicamentos(venta, facturaListaLotes);
     }
 }
 
-}
 
-private  void cargarMedicamentoSegunLote(FacturaVenta venta, LoteFactura lote)throws Exception{
+
+private  void cargarMedicamentos(FacturaVenta venta, FacturaListaLotes facturaListalotes )throws Exception{
     
-     MedicamentoDAO medDAO=new MedicamentoDAO();
-    List<Medicamento> listaMedicamentos=medDAO.conseguirMedicamentoDisponibleLote(lote.getLote());
-    System.out.println("longitud:" +listaMedicamentos.size());
-    for (int i=1; i<=lote.getCantidad(); i++){
+     LaboratorioDescMedVentaDAO medDAO=new LaboratorioDescMedVentaDAO();
+ List<Medicamento> listaMedicamentos=medDAO.conseguirMedicamentoDisponibleLote(facturaListalotes.getLabDescMedVenta());
+ System.out.println("longitud:" +listaMedicamentos.size());
+    for (int i=1; i<=facturaListalotes.getCantidadTotal(); i++){
         Medicamento med=listaMedicamentos.get(i-1);
                 venta.getMedicamentoList().add(med);
     }
- 
+// 
   
 }
 }

@@ -19,20 +19,30 @@ import modulofactura.DescripcionLaboratorio;
  */
 public class ConsultaMedDAO {
 
-//    public Lote buscarLote(Lote lote) {
-//
-//        Lote LoteEncontrado = null;
-//        EntityManagerFactory factoria = Persistence.createEntityManagerFactory("DrogueriaPU");
-//        EntityManager gestor = factoria.createEntityManager();
-//        EntityTransaction trans = gestor.getTransaction();
-//        trans.begin();
-//       
-//        Query consulta = gestor.createNamedQuery("ConsultaMed.findByIdLote");
-//        consulta.setParameter("idLote", lote.getIdLote()); 
-//        
-//  
-//  
-//    }
+public DescripcionLaboratorio consultaCantidadesPorDescLab(LaboratorioDescMedVenta labDescVenta)
+        throws Exception {
+        DescripcionLaboratorio descripcionLab = null;
+EntityManagerFactory fact=Persistence.createEntityManagerFactory
+        ("DrogueriaPU");
+ EntityManager gestor=fact.createEntityManager();
+        EntityTransaction transaccion=gestor.getTransaction();
+        
+        transaccion.begin();
+   String consulta="select NEW modulofactura.DescripcionLaboratorio"
+           + "(c.idDesc,c.idLab, COUNT (c.idMedicamento)) from " 
+           +" ConsultaMed c where c.idLab= :idLab and c.idDesc= :idDesc "
+           + "group by c.idDesc, c.idLab";
+            
+   Query consult= gestor.createQuery(consulta);
+   consult.setParameter("idLab",labDescVenta.getLaboratorioDescMedVentaPK().getIdLab());
+   consult.setParameter("idDesc",labDescVenta.getLaboratorioDescMedVentaPK().getIdDesc());
+   descripcionLab=(DescripcionLaboratorio)consult.getSingleResult();
+          
+   
+   transaccion.commit();
+    return descripcionLab;
+      
+    }
 //    
 public DescripcionLaboratorio consultaCantidadesPorLote(Lote lote) throws Exception {
         DescripcionLaboratorio descripcionLab = null;

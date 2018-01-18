@@ -25,6 +25,12 @@ public class DescripcionLaboratorio {
    this.cantidad=cant;
     }
 
+   public DescripcionLaboratorio(int idDescripcion, int idLaboratorio, long cant) {
+
+   this.idDescripcion=idDescripcion;
+   this.idLaboratorio=idLaboratorio;
+   this.cantidad=cant;
+    }
     public int getIdDescripcion() {
         return idDescripcion;
     }

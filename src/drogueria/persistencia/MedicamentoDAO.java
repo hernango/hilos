@@ -34,6 +34,7 @@ public List<Medicamento> conseguirMedicamentoDisponibleLote(Lote lote)
         listaMedicamentos = (List<Medicamento>) consult.getResultList();
         transaccion.commit();
         return listaMedicamentos;
-}      
+} 
+
     
 }

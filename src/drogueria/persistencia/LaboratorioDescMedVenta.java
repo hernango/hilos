@@ -52,6 +52,9 @@ public class LaboratorioDescMedVenta implements Serializable {
     @Basic(optional = false)
     @Column(name = "estado")
     private String estado;
+    @Basic(optional = false)
+    @Column(name = "neto")
+    private int neto;
     @JoinColumns ({
     @JoinColumn(name = "id_desc", referencedColumnName = "id_desc", insertable = false, updatable = false),
     @JoinColumn(name = "id_lab", referencedColumnName = "id_lab", insertable = false, updatable = false)
@@ -126,6 +129,17 @@ public class LaboratorioDescMedVenta implements Serializable {
         this.laboratorioDescMed = laboratorioDescMed;
     }
 
+    public int getNeto() {
+        return neto;
+    }
+
+    public void setNeto(int neto) {
+        this.neto = neto;
+    }
+
+  
+
+    
     @Override
     public int hashCode() {
         int hash = 0;
