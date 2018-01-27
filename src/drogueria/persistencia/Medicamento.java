@@ -44,11 +44,11 @@ public class Medicamento implements Serializable {
     @Column(name = "estado_producto")
     private String estadoProducto;
     
-    @JoinTable(name = "item_venta", joinColumns = {
-        @JoinColumn(name = "id_medicamento", referencedColumnName = "id_medicamento")}, inverseJoinColumns = {
-        @JoinColumn(name = "id_factura_venta", referencedColumnName = "id_factura_venta")})
-    @ManyToOne(fetch = FetchType.LAZY )
-    private FacturaVenta facturaVenta;
+//    @JoinTable(name = "item_venta", joinColumns = {
+//        @JoinColumn(name = "id_medicamento", referencedColumnName = "id_medicamento")}, inverseJoinColumns = {
+//        @JoinColumn(name = "id_factura_venta", referencedColumnName = "id_factura_venta")})
+//    @ManyToOne(fetch = FetchType.LAZY )
+//    private FacturaVenta facturaVenta;
     
     @JoinColumn(name = "id_lote", referencedColumnName = "id_lote")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -82,13 +82,13 @@ public class Medicamento implements Serializable {
         this.estadoProducto = estadoProducto;
     }
 
-    public FacturaVenta getFacturaVenta() {
-        return facturaVenta;
-    }
-
-    public void setFacturaVenta(FacturaVenta facturaVenta) {
-        this.facturaVenta = facturaVenta;
-    }
+//    public FacturaVenta getFacturaVenta() {
+//        return facturaVenta;
+//    }
+//
+//    public void setFacturaVenta(FacturaVenta facturaVenta) {
+//        this.facturaVenta = facturaVenta;
+//    }
 
 
     public Lote getLote() {

@@ -28,19 +28,23 @@ public interface IFacturaService {
     
     public Date getHora();
     
-    public void agregarEnLote(LaboratorioDescMedVenta loteFactura)throws Exception;
+    public void agregarMedicamentos(ItemVenta item)throws Exception;
     
-    public void eliminarEnLote(LoteFactura loteFactura)throws Exception;
+    public void eliminarMedicamentos(ItemVenta item)throws Exception;
     
-    public boolean agregarServicioSalud(ServicioSalud servicioSalud);
-    
-    public boolean eliminarServicioSalud(ServicioSalud servicioSalud);
-    
-    public void procesarVenta()throws Exception;
+    public void agregarServiciosGeneralesMedicamentos(GeneralesServiciosMedicamentos generalServiciosMedicamentos)throws Exception;
+   
+    public void  eliminarServiciosGeneralesMedicamentos(GeneralesServiciosMedicamentos generalServiciosMedicamentos)throws Exception; 
+   
+   public void procesarVenta()throws Exception;
+   
+   public void limpiarFacturacion() throws Exception;
     
     public FacturadorVenta getFact();
     
     public long totalVenta();
+    public long totalIva();
+    public long subTotal();
     
     public void setPago(long pago);
     

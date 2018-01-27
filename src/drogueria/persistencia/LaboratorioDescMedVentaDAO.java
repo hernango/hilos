@@ -19,6 +19,36 @@ import javax.persistence.Query;
  */
 public class LaboratorioDescMedVentaDAO {
     
+    public LaboratorioDescMedVenta conseguirLabDescVentaPorCodigoBarras(LaboratorioDescMedVenta labDescVenta)
+    throws Exception
+    {
+    LaboratorioDescMedVenta labDescVentaAux=null;
+    EntityManagerFactory fact=Persistence.createEntityManagerFactory
+        ("DrogueriaPU");
+ EntityManager gestor=fact.createEntityManager();
+        EntityTransaction transaccion=gestor.getTransaction();
+        
+        transaccion.begin();
+        
+   String consulta="select labDescVenta  from  LaboratorioDescMedVenta labDescVenta " 
+           + "join labDescVenta.laboratorioDescMed labDescMed "
+           + "where labDescMed.codigoBarras= :codigoBarras";
+           
+      Query consult= gestor.createQuery(consulta);
+   consult.setParameter("codigoBarras",labDescVenta.getLaboratorioDescMed().getCodigoBarras());
+   //consult.setParameter("idDesc",labDescVenta.getLaboratorioDescMedVentaPK().getIdDesc());
+   try {
+   labDescVentaAux=(LaboratorioDescMedVenta)consult.getSingleResult();
+          
+   }
+   catch(NoResultException error){
+   throw new Exception("No se encuentra medicamento en farmacia");
+   } 
+   transaccion.commit();
+   gestor.close();
+    return labDescVentaAux;
+    
+    }
     
 public List<Medicamento> conseguirMedicamentoDisponibleLote(LaboratorioDescMedVenta labDescVenta)
 throws Exception{
@@ -35,7 +65,8 @@ throws Exception{
 //           + "where lote.laboratorioDescMedVenta.laboratorioDescMed.laboratorio.idLab= :idLab "
 //           + " and lote.laboratorioDescMedVenta.laboratorioDescMed.descripcion.idDesc= :idDesc ";
            + "where lote.laboratorioDescMedVenta.laboratorioDescMedVentaPK.idLab= :idLab "
-           + " and lote.laboratorioDescMedVenta.laboratorioDescMedVentaPK.idDesc= :idDesc ";
+           + " and lote.laboratorioDescMedVenta.laboratorioDescMedVentaPK.idDesc= :idDesc "
+           + " and med.estadoProducto='DISPONIBLE' order by lote.fechaVigencia ASC";
             
    Query consult= gestor.createQuery(consulta);
    consult.setParameter("idLab",labDescVenta.getLaboratorioDescMedVentaPK().getIdLab());
@@ -81,4 +112,32 @@ throws Exception{
     return labDescVentaAux;
     
 }
+public List<LaboratorioDescMedVenta> sacarTodoComparacion(String cadena){
+    
+    List<LaboratorioDescMedVenta> lista=null;
+        EntityManagerFactory fact=Persistence.createEntityManagerFactory
+        ("DrogueriaPU");
+ EntityManager gestor=fact.createEntityManager();
+        EntityTransaction transaccion=gestor.getTransaction();
+        
+        transaccion.begin();
+               
+   String consulta="select labDescVenta  from  LaboratorioDescMedVenta labDescVenta "
+           +"join labDescVenta.laboratorioDescMed labDescMed join labDescMed.descripcion des "
+           + "where des.nombreComercial like '%"  +cadena +"%' "
+           + " or labDescMed.codigoBarras like  '%"  +cadena +"%' ";
+   
+   
+   Query consult= gestor.createQuery(consulta);
+   //consult.setParameter("cadena",cadena);
+   lista=(List<LaboratorioDescMedVenta>)consult.getResultList();
+   System.out.println("datos:" +lista.size());
+   
+ 
+           
+ return lista;   
+}
+
+
+
 }

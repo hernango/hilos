@@ -5,7 +5,6 @@
  */
 package modulofactura;
 
-
 import drogueria.persistencia.ConsultaMedDAO;
 import drogueria.persistencia.LaboratorioDescMedVenta;
 import drogueria.persistencia.Lote;
@@ -18,19 +17,47 @@ import javax.persistence.NoResultException;
 
 /**
  *
- * @author hernan
- * lista de medicamentos
- * mapaMedicamentos<String,FacturaListaLotes>
- * key:string: esta formado por id_desc/id_lab
- * 
+ * @author hernan lista de medicamentos listaItemVentas<String,ItemVenta>
+ * key:string -->hace referencia al codigo de barras del producto.
+ *
  */
 public class FacturadorVenta {
-        
-   private long totalVenta;
-   private long pago;
-   Map<String,FacturaListaLotes> mapaListaLotes=new HashMap<String, FacturaListaLotes>();
-   List<ServicioSalud>listaServicios;
-   
+
+    private long totalVenta;
+    private long pago;
+    private long subTotal;
+    private long iva;
+    private double porcentajeIva;
+    
+    Map<String, ItemVenta> listaItemVentas = new HashMap<String, ItemVenta>();
+    List<GeneralesServiciosMedicamentos> listaGeneralServiciosMedicamentos;
+
+    public Map<String, ItemVenta> getListaItemVentas() {
+        return listaItemVentas;
+    }
+
+    public void setListaItemVentas(Map<String, ItemVenta> listaItemVentas) {
+        this.listaItemVentas = listaItemVentas;
+    }
+
+    public List<GeneralesServiciosMedicamentos> getListaGeneralServiciosMedicamentos() {
+        return listaGeneralServiciosMedicamentos;
+    }
+
+    public void setListaGeneralServiciosMedicamentos(List<GeneralesServiciosMedicamentos> listaGeneralServiciosMedicamentos) {
+        this.listaGeneralServiciosMedicamentos = listaGeneralServiciosMedicamentos;
+    }
+
+    public double getPorcentajeIva() {
+        return porcentajeIva;
+    }
+
+    public void setPorcentajeIva(double porcentajeIva) {
+        this.porcentajeIva = porcentajeIva;
+    }
+
+       
+    
     public long getTotalVenta() {
         return totalVenta;
     }
@@ -44,118 +71,104 @@ public class FacturadorVenta {
     }
 
     public void setPago(long pago) {
+        
         this.pago = pago;
     }
 
-    public Map<String, FacturaListaLotes> getMapaListaLotes() {
-        return mapaListaLotes;
+    public long getSubTotal() {
+        return subTotal;
     }
 
-    public void setMapaListaLotes(Map<String, FacturaListaLotes> mapaListaLotes) {
-        this.mapaListaLotes = mapaListaLotes;
+    public void setSubTotal(long subTotal) {
+        this.subTotal = subTotal;
     }
 
-    public List<ServicioSalud> getListaServicios() {
-        return listaServicios;
+    public long getIva() {
+        return iva;
     }
 
-    public void setListaServicios(List<ServicioSalud> listaServicios) {
-        this.listaServicios = listaServicios;
+    public void setIva(long iva) {
+        this.iva = iva;
     }
-   
-   
- public void agregarMedicamento(LaboratorioDescMedVenta labDescVenta)
- throws Exception{
-     
- ConsultaMedDAO consultaMedDAO= new ConsultaMedDAO();
-       try{
-       DescripcionLaboratorio descLab=consultaMedDAO.consultaCantidadesPorDescLab(labDescVenta);
-       
-       if(descLab!=null){
-       
-       String codigoDescLab=String.valueOf(descLab.getIdDescripcion()) 
-               +"/" +String.valueOf(descLab.getIdLaboratorio());
-       FacturaListaLotes controladorListaLotes=mapaListaLotes.get(codigoDescLab);
-      // crea si es necesario por primera vez un lote 
-       if(controladorListaLotes==null){
-          controladorListaLotes=new FacturaListaLotes();
-          controladorListaLotes.cargarLaboratorioDescMedVenta(labDescVenta);
-          mapaListaLotes.put(codigoDescLab, controladorListaLotes);
-          }
-        if(controladorListaLotes.agregarMedicamento(descLab)){
-         this.totalVenta +=controladorListaLotes.getLabDescMedVenta().getPrecio();
-        }
-        
-       }
-              
-       else{
-       throw new Exception("No se encuentra en bodega medicamento");
-       }
-       }
-       catch (NoResultException error){ 
-           throw new Exception("no existen elementos");
-       }
- 
- }
 
- 
-  /* eliminar medicamento de lote solo si es posible
-    */
-  
- public void eliminarMedicamento(LaboratorioDescMedVenta labDescVenta) throws Exception
-  {
-   try{   
-   String codigoDescLab=String.valueOf(labDescVenta.getLaboratorioDescMed().getDescripcion().getIdDesc()) 
-               +"/" +String.valueOf(labDescVenta.getLaboratorioDescMed().getLaboratorio().getIdLab());
-   FacturaListaLotes controladorListaLotes=mapaListaLotes.get(codigoDescLab);  
-   
-   if(controladorListaLotes!=null){
-        
-    if(controladorListaLotes.eliminarMedicamento(labDescVenta)){
-         this.totalVenta -=controladorListaLotes.getLabDescMedVenta().getPrecio();
-         if (controladorListaLotes.getCantidadTotal()==0){
-           mapaListaLotes.remove(codigoDescLab);
-         }
-        }  
     
+    public boolean agregarMedicamento(ItemVenta item) {
+
+        boolean fueAgregado = false;
+
+        ItemVenta itemVentaEncontrado = listaItemVentas.get(item.getLabDescVenta().getLaboratorioDescMed().getCodigoBarras());
+        if (itemVentaEncontrado != null) {
+            int sumaTotal = itemVentaEncontrado.getCantidad() + item.getCantidad();
+
+            if (sumaTotal <= item.getStock()) {
+                //actualizar datos del itemVentaEncontrado
+                itemVentaEncontrado.setStock(item.getStock());
+                itemVentaEncontrado.setCantidad(sumaTotal);
+                totalVenta +=item.calcularValorDescuento();
+                fueAgregado = true;
+            }
+        } else if (item.getCantidad() <= item.getStock()) {
+              System.out.println("primera vez");
+              ItemVenta itemVentaAux=new ItemVenta();
+              itemVentaAux.setLabDescVenta(item.getLabDescVenta());
+              itemVentaAux.setCantidad(item.getCantidad());
+              itemVentaAux.setStock(item.getStock());
+            listaItemVentas.put(item.getLabDescVenta().getLaboratorioDescMed().getCodigoBarras(), itemVentaAux);
+            totalVenta += item.calcularValorDescuento();
+            calcularValores();
+            fueAgregado = true;
         }
-   else throw new Exception("No existe medicamento a eliminar");
-   }
-   catch(NoResultException error){
-   throw new Exception("no existe lote a eliminar");}
-   }
- 
- public Long devolusion(){
- return (this.pago-this.totalVenta);
- }
- 
- public boolean agregarServicioSalud(ServicioSalud servicioSalud){
- 
-     boolean realizado=false;
-     if(this.listaServicios==null){
-     this.listaServicios=new ArrayList<ServicioSalud>();
-     System.out.println("aqui");
-     }
-     listaServicios.add(servicioSalud);
-     this.totalVenta +=servicioSalud.getValor();
-     
-     realizado=true;
-       
-     return realizado;        
+        return fueAgregado;
+    }
     
- }
- 
- public boolean eliminarServicioSalud(ServicioSalud servicioSalud){
-  boolean realizado=false;
-     if(listaServicios!=null){
-     
-        realizado= listaServicios.remove(servicioSalud);
-        if(realizado){ this.totalVenta -=servicioSalud.getValor();}
-     }
-     
-     
-     
-       
+    public boolean eliminarMedicamento(ItemVenta item){
+    boolean efectuado=false;
+    
+    listaItemVentas.remove(item.getLabDescVenta().getLaboratorioDescMed().getCodigoBarras());
+    totalVenta -=item.calcularValorDescuento();
+    calcularValores();
+    efectuado=true;
+    
+    return efectuado;
+    }
+
+    public Long devolusion() {
+        return (this.pago - this.totalVenta);
+    }
+
+    public boolean agregarGeneralesServicioMedicamentos(GeneralesServiciosMedicamentos generalServicioMedicamento) {
+
+        boolean realizado = false;
+        if (this.listaGeneralServiciosMedicamentos == null) {
+            this.listaGeneralServiciosMedicamentos = new ArrayList<GeneralesServiciosMedicamentos>();
+        }
+        listaGeneralServiciosMedicamentos.add(generalServicioMedicamento);
+        this.totalVenta += generalServicioMedicamento.getValor();
+        calcularValores();
+
+        realizado = true;
+
+        return realizado;
+
+    }
+    
+    public boolean eliminarGeneralesServicioMedicamentos(GeneralesServiciosMedicamentos generalServicioMedicamento)
+    {
+    boolean realizado=false;
+    if(listaGeneralServiciosMedicamentos!=null && listaGeneralServiciosMedicamentos.size()>0)
+    {
+      realizado=listaGeneralServiciosMedicamentos.remove(generalServicioMedicamento);
+      this.totalVenta -= generalServicioMedicamento.getValor();
+      calcularValores();
+    }
      return realizado;
- }
+    }
+
+//    
+    
+    public void calcularValores(){
+    this.iva=(long)Math.round(this.totalVenta * this.porcentajeIva);
+    System.out.println("iva:"+ this.porcentajeIva);
+    this.subTotal=this.totalVenta-this.iva;
+    }
 }

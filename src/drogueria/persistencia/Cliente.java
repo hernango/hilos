@@ -5,6 +5,8 @@
  */
 package drogueria.persistencia;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -19,6 +21,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -31,10 +34,12 @@ import javax.persistence.Table;
     @NamedQuery(name = "Cliente.findByIdCliente", query = "SELECT c FROM Cliente c WHERE c.idCliente = :idCliente"),
     @NamedQuery(name = "Cliente.findByCedula", query = "SELECT c FROM Cliente c WHERE c.cedula = :cedula"),
     @NamedQuery(name = "Cliente.findByNombreCliente", query = "SELECT c FROM Cliente c WHERE c.nombreCliente = :nombreCliente"),
-    @NamedQuery(name = "Cliente.findByApellidoCliente", query = "SELECT c FROM Cliente c WHERE c.apellidoCliente = :apellidoCliente"),
     @NamedQuery(name = "Cliente.findByDireccionContacto", query = "SELECT c FROM Cliente c WHERE c.direccionContacto = :direccionContacto"),
     @NamedQuery(name = "Cliente.findByTelefonoContacto", query = "SELECT c FROM Cliente c WHERE c.telefonoContacto = :telefonoContacto")})
 public class Cliente implements Serializable {
+
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,9 +53,6 @@ public class Cliente implements Serializable {
     @Basic(optional = false)
     @Column(name = "nombre_cliente")
     private String nombreCliente;
-    @Basic(optional = false)
-    @Column(name = "apellido_cliente")
-    private String apellidoCliente;
     @Column(name = "direccion_contacto")
     private String direccionContacto;
     @Column(name = "telefono_contacto")
@@ -65,11 +67,11 @@ public class Cliente implements Serializable {
         this.idCliente = idCliente;
     }
 
-    public Cliente(Integer idCliente, int cedula, String nombreCliente, String apellidoCliente) {
+    public Cliente(Integer idCliente, int cedula, String nombreCliente) {
         this.idCliente = idCliente;
         this.cedula = cedula;
         this.nombreCliente = nombreCliente;
-        this.apellidoCliente = apellidoCliente;
+        
     }
 
     public Integer getIdCliente() {
@@ -77,7 +79,9 @@ public class Cliente implements Serializable {
     }
 
     public void setIdCliente(Integer idCliente) {
+        Integer oldIdCliente = this.idCliente;
         this.idCliente = idCliente;
+        changeSupport.firePropertyChange("idCliente", oldIdCliente, idCliente);
     }
 
     public int getCedula() {
@@ -85,7 +89,9 @@ public class Cliente implements Serializable {
     }
 
     public void setCedula(int cedula) {
+        int oldCedula = this.cedula;
         this.cedula = cedula;
+        changeSupport.firePropertyChange("cedula", oldCedula, cedula);
     }
 
     public String getNombreCliente() {
@@ -93,23 +99,20 @@ public class Cliente implements Serializable {
     }
 
     public void setNombreCliente(String nombreCliente) {
+        String oldNombreCliente = this.nombreCliente;
         this.nombreCliente = nombreCliente;
+        changeSupport.firePropertyChange("nombreCliente", oldNombreCliente, nombreCliente);
     }
 
-    public String getApellidoCliente() {
-        return apellidoCliente;
-    }
-
-    public void setApellidoCliente(String apellidoCliente) {
-        this.apellidoCliente = apellidoCliente;
-    }
-
+    
     public String getDireccionContacto() {
         return direccionContacto;
     }
 
     public void setDireccionContacto(String direccionContacto) {
+        String oldDireccionContacto = this.direccionContacto;
         this.direccionContacto = direccionContacto;
+        changeSupport.firePropertyChange("direccionContacto", oldDireccionContacto, direccionContacto);
     }
 
     public String getTelefonoContacto() {
@@ -117,7 +120,9 @@ public class Cliente implements Serializable {
     }
 
     public void setTelefonoContacto(String telefonoContacto) {
+        String oldTelefonoContacto = this.telefonoContacto;
         this.telefonoContacto = telefonoContacto;
+        changeSupport.firePropertyChange("telefonoContacto", oldTelefonoContacto, telefonoContacto);
     }
 
     public List<FacturaVenta> getFacturaVentaList() {
@@ -151,6 +156,14 @@ public class Cliente implements Serializable {
     @Override
     public String toString() {
         return "drogueria.persistencia.Cliente[ idCliente=" + idCliente + " ]";
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
     
 }

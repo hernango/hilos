@@ -34,4 +34,23 @@ public class LoteDAO {
     }
     
 
+    public  boolean  borrarPorLote(Lote lote)throws Exception{
+        boolean resultadoConsulta=false;
+            
+        EntityManagerFactory fact = Persistence.createEntityManagerFactory("DrogueriaPU");
+        EntityManager gestor = fact.createEntityManager();
+        EntityTransaction transaccion = gestor.getTransaction();
+
+        transaccion.begin();
+        String consulta="delete from Lote l WHERE l.idLote = :idLote";
+        Query consult = gestor.createQuery(consulta);
+        consult.setParameter("idLote", lote.getIdLote());
+       int datoModificados= consult.executeUpdate();
+        
+        if(datoModificados>0)
+            resultadoConsulta=true;
+       transaccion.commit();
+            
+        return resultadoConsulta;
+    }
 }

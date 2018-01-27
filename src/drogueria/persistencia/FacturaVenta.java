@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  *
@@ -64,14 +65,15 @@ public class FacturaVenta implements Serializable {
     
 //    @OneToMany (cascade =CascadeType.ALL, mappedBy ="factura", fetch = FetchType.LAZY)
 //    private List<ItemVenta> listaItemVenta;
- @JoinTable(name = "item_venta", joinColumns = {
-       @JoinColumn(name = "id_factura_venta", referencedColumnName = "id_factura_venta" )} , inverseJoinColumns = {
-       @JoinColumn(name = "id_medicamento", referencedColumnName = "id_medicamento") })   
- @OneToMany(fetch=FetchType.LAZY)
+// @JoinTable(name = "item_venta", joinColumns = {
+//       @JoinColumn(name = "id_factura_venta", referencedColumnName = "id_factura_venta" )} , inverseJoinColumns = {
+//       @JoinColumn(name = "id_medicamento", referencedColumnName = "id_medicamento") })   
+// @OneToMany(fetch=FetchType.LAZY)
+  @Transient 
   private List<Medicamento> medicamentoList;
  
     @JoinColumn(name = "id_cliente", referencedColumnName = "id_cliente")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY) 
     private Cliente cliente;
     @JoinColumn(name = "id_cajero", referencedColumnName = "id_usuario")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

@@ -19,19 +19,24 @@ import modulofactura.DescripcionLaboratorio;
  */
 public class FacturaVentaDAO {
     
-public void registrarFacturaVenta(FacturaVenta venta){
+public void registrarFacturaVenta(FacturaVenta venta) throws Exception{
 EntityManagerFactory fact=Persistence.createEntityManagerFactory("DrogueriaPU");
   EntityManager gestor=fact.createEntityManager();
   EntityTransaction trans=gestor.getTransaction();
+  MedicamentoDAO daoMed=new MedicamentoDAO();
   trans.begin();
-  gestor.persist(venta);
+  
   System.out.println(venta.getMedicamentoList().size());
  for(Medicamento med:venta.getMedicamentoList())
   {
-  med.setEstadoProducto("VENDIDO");
-  gestor.merge(med);
+ 
+  String consulta="delete from Medicamento med WHERE med.idMedicamento = :idMed";
+  Query consult = gestor.createQuery(consulta);
+  consult.setParameter("idMed", med.getIdMedicamento());
+  int datoModificados= consult.executeUpdate();    
+   
   }
-  
+  gestor.persist(venta);
   
   trans.commit();
 }    

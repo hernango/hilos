@@ -56,7 +56,7 @@ public class Lote implements Serializable {
     })
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private LaboratorioDescMedVenta laboratorioDescMedVenta;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lote", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lote", fetch = FetchType.LAZY)
     private List<Medicamento> medicamentoList;
 
     public Lote() {

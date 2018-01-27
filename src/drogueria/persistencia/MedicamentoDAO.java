@@ -36,5 +36,23 @@ public List<Medicamento> conseguirMedicamentoDisponibleLote(Lote lote)
         return listaMedicamentos;
 } 
 
-    
+public  boolean  borrarPorMedicamento(Medicamento medicamento)throws Exception{
+        boolean resultadoConsulta=false;
+            
+        EntityManagerFactory fact = Persistence.createEntityManagerFactory("DrogueriaPU");
+        EntityManager gestor = fact.createEntityManager();
+        EntityTransaction transaccion = gestor.getTransaction();
+ 
+        transaccion.begin();
+        String consulta="delete from Medicamento med WHERE med.idMedicamento = :idMed";
+        Query consult = gestor.createQuery(consulta);
+        consult.setParameter("idMed", medicamento.getIdMedicamento());
+        int datoModificados= consult.executeUpdate();
+        
+        if(datoModificados>0)
+            resultadoConsulta=true;
+       transaccion.commit();
+            
+        return resultadoConsulta;
+    }    
 }

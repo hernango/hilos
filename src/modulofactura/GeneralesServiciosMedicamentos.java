@@ -9,10 +9,19 @@ package modulofactura;
  *
  * @author hernan
  */
-public class OtrosMedicamentos {
+public class GeneralesServiciosMedicamentos {
     
-private String descripcionServicio="Otros Med";
+private String descripcionServicio;
 private int valor;
+
+public GeneralesServiciosMedicamentos(){}
+
+    public GeneralesServiciosMedicamentos(String descripcion, int valor) {
+        this.descripcionServicio=descripcion;
+        this.valor = valor;
+        
+    }
+
 
     public String getDescripcionServicio() {
         return descripcionServicio;
@@ -29,8 +38,6 @@ private int valor;
     public void setValor(int valor) {
         this.valor = valor;
     }
-
-
 
 
 }
