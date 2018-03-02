@@ -42,4 +42,10 @@ public static String formatoFecha(Date fecha){
     return formateo.format(fecha);
 } 
 
+public static Date formatoFechaDate(String fecha)throws Exception{
+
+    
+    SimpleDateFormat formateo=new SimpleDateFormat("yyyy-MM-dd");
+    return formateo.parse (fecha);
+} 
 }

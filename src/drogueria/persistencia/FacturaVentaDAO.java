@@ -5,6 +5,7 @@
  */
 package drogueria.persistencia;
 
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -42,4 +43,23 @@ EntityManagerFactory fact=Persistence.createEntityManagerFactory("DrogueriaPU");
 }    
 
 
+public List<FacturaVenta> conseguirFacturaCajeroPeriodo(Usuario usuario, Date fechaInicial, Date fechaFinal)
+throws Exception{
+    
+    List<FacturaVenta> listaFacturas = null;
+        EntityManagerFactory fact = Persistence.createEntityManagerFactory("DrogueriaPU");
+        EntityManager gestor = fact.createEntityManager();
+        EntityTransaction transaccion = gestor.getTransaction();
+
+        transaccion.begin();
+        String consulta="SELECT factura FROM FacturaVenta factura  join factura.usuario usr WHERE "
+                + "usr.idUsuario= :usuario and factura.fechaFactura between :fechaInicial and :fechaFinal ";
+        Query consult = gestor.createQuery(consulta);
+        consult.setParameter("usuario", usuario.getIdUsuario());
+        consult.setParameter("fechaInicial", fechaInicial);
+        consult.setParameter("fechaFinal", fechaFinal);
+        listaFacturas = (List<FacturaVenta>) consult.getResultList();
+        transaccion.commit();
+        return listaFacturas;
+}
 }
